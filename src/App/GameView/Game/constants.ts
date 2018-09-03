@@ -4,7 +4,7 @@ export const GAME = {
   HEIGHT: 800 * DPR,
   WIDTH: 400 * DPR,
   GRAVITY: 300,
-  CANNON_OFFSET: 30,
+  CANNON_OFFSET: 100,
 };
 
 export const KEYS = {
