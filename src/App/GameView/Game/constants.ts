@@ -1,7 +1,19 @@
-const DPR = 4;
+const DPR = 1;
 
 export const GAME = {
-  HEIGHT: 400 * DPR,
-  WIDTH: 800 * DPR,
+  HEIGHT: 800 * DPR,
+  WIDTH: 400 * DPR,
   GRAVITY: 300,
+  CANNON_OFFSET: 30,
+};
+
+export const KEYS = {
+  PLAYER: "player",
+  SCENES: {
+    REPLAY: "replayScene",
+  },
+};
+
+export const ASSET_ENDPOINTS = {
+  MISSING: "assets/missing.png",
 };

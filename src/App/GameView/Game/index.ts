@@ -1,81 +1,45 @@
-import Phaser from "phaser";
-import { GAME } from "./constants";
+import { AUTO, Game, Scene } from "phaser";
+import { ASSET_ENDPOINTS, GAME, KEYS } from "./constants";
+
+const PHYSICS_ENGINE = "arcade";
 
 export const getGame = () => {
-  const config = {
-    type: Phaser.AUTO,
+  const config: GameConfig = {
+    type: AUTO,
     width: GAME.WIDTH,
     height: GAME.HEIGHT,
     physics: {
-      default: "arcade",
+      default: PHYSICS_ENGINE,
       arcade: {
         gravity: { y: GAME.GRAVITY },
         debug: false,
       },
     },
-    scene: {
-      preload,
-      create,
-      update,
-    },
+    scene: [ReplayScene],
   };
-  return new Phaser.Game(config);
+  return new Game(config);
 };
 
-let player;
-
-function preload() {
-  const PreloadManager = this;
-  PreloadManager.load.image("sky", "assets/missing.png");
-  PreloadManager.load.image("ground", "assets/missing.png");
-  PreloadManager.load.image("star", "assets/missing.png");
-  PreloadManager.load.image("bomb", "assets/missing.png");
-  PreloadManager.load.spritesheet("dude", "assets/missing.png", {
-    frameWidth: 32,
-    frameHeight: 48,
-  });
+interface ReplayState {
+  player?;
 }
 
-function create() {
-  const CreateManager = this;
-  CreateManager.add.image(400, 300, "sky");
+class ReplayScene extends Scene {
+  private state: ReplayState = {};
 
-  const platforms = CreateManager.physics.add.staticGroup();
-
-  platforms
-    .create(400, 568, "ground")
-    .setScale(2)
-    .refreshBody();
-
-  platforms.create(600, 400, "ground");
-  platforms.create(50, 250, "ground");
-  platforms.create(750, 220, "ground");
-
-  player = CreateManager.physics.add.sprite(100, 50, "dude");
-  player.setBounce(0.2);
-  player.setCollideWorldBounds(true);
-
-  CreateManager.physics.add.collider(player, platforms);
-}
-
-function update() {
-  const UpdateManager = this;
-  const cursors = UpdateManager.input.keyboard.createCursorKeys();
-  if (cursors.left.isDown) {
-    player.setVelocityX(-160);
-
-    player.anims.play("left", true);
-  } else if (cursors.right.isDown) {
-    player.setVelocityX(160);
-
-    player.anims.play("right", true);
-  } else {
-    player.setVelocityX(0);
-
-    player.anims.play("turn");
+  constructor() {
+    super(KEYS.SCENES.REPLAY);
   }
 
-  if (cursors.up.isDown && player.body.touching.down) {
-    player.setVelocityY(-330);
+  preload() {
+    this.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.MISSING);
+  }
+
+  create() {
+    this.state.player = this.physics.add.sprite(100, 50, KEYS.PLAYER);
+
+    const { player } = this.state;
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
   }
 }
