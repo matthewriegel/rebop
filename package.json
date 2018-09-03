@@ -77,7 +77,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "jest && npm run build"
+      "pre-push": "jest"
     }
   },
   "lint-staged": {
