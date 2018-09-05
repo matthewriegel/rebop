@@ -2,7 +2,7 @@ import { AUTO, Game } from "phaser";
 import { GAME } from "./constants";
 import { ReplayScene } from "./ReplayScene";
 
-const PHYSICS_ENGINE = "arcade";
+const PHYSICS_ENGINE = "matter";
 
 export const getGame = (canvas: HTMLCanvasElement) => {
   const contextConfig = {
@@ -31,10 +31,6 @@ export const getGame = (canvas: HTMLCanvasElement) => {
     context,
     physics: {
       default: PHYSICS_ENGINE,
-      arcade: {
-        gravity: { y: GAME.GRAVITY },
-        debug: false,
-      },
     },
     scene: [ReplayScene],
   };
