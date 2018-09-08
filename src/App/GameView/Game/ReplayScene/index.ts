@@ -1,5 +1,8 @@
 import { Scene } from "phaser";
-import { ASSET_ENDPOINTS, GAME, KEYS } from "./constants";
+import { ASSET_ENDPOINTS } from "../../../../assets";
+import { GAME, KEYS } from "../constants";
+import { pegList } from "./fixtures";
+import { getPeg } from "./getPeg";
 
 type PhaserImage = Phaser.Physics.Matter.Image;
 
@@ -16,7 +19,7 @@ export class ReplayScene extends Scene {
 
   preload() {
     const scene: Phaser.Scene = this;
-    scene.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.CIRCLE);
+    scene.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.BALL);
   }
 
   create() {
@@ -35,21 +38,18 @@ export class ReplayScene extends Scene {
     );
 
     this.state.player = scene.matter.add.image(
-      GAME.WIDTH / 2,
+      GAME.WIDTH / 2 + 1,
       GAME.CANNON_OFFSET,
       KEYS.PLAYER,
     );
 
     const { player } = this.state;
-    player.setCircle(128, {});
-    player.setBounce(1);
+    player.setCircle(GAME.PLAYER_RADIUS, {});
+    player.setBounce(0.9);
+    player.setFriction(0, 0);
 
-    const platform = scene.matter.add.image(
-      GAME.WIDTH / 2 + 100,
-      GAME.HEIGHT,
-      KEYS.PLAYER,
+    pegList.forEach(item =>
+      getPeg(scene, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
-    platform.setCircle(128, {});
-    platform.setStatic(true);
   }
 }
