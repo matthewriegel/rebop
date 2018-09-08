@@ -15,12 +15,14 @@ export class ReplayScene extends Scene {
   }
 
   preload() {
-    this.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.CIRCLE);
+    const scene: Phaser.Scene = this;
+    scene.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.CIRCLE);
   }
 
   create() {
+    const scene: Phaser.Scene = this;
     // Set world bounds on collision
-    this.matter.world.setBounds(
+    scene.matter.world.setBounds(
       0,
       0,
       GAME.WIDTH,
@@ -32,7 +34,7 @@ export class ReplayScene extends Scene {
       true,
     );
 
-    this.state.player = this.matter.add.image(
+    this.state.player = scene.matter.add.image(
       GAME.WIDTH / 2,
       GAME.CANNON_OFFSET,
       KEYS.PLAYER,
@@ -42,7 +44,7 @@ export class ReplayScene extends Scene {
     player.setCircle(128, {});
     player.setBounce(1);
 
-    const platform = this.matter.add.image(
+    const platform = scene.matter.add.image(
       GAME.WIDTH / 2 + 100,
       GAME.HEIGHT,
       KEYS.PLAYER,

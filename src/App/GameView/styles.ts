@@ -1,7 +1,10 @@
 import { CSSProperties } from "react";
 
 export const CanvasStyle: CSSProperties = {
-  height: "100vh",
+  width: "100%",
+  height: "100%",
+  objectFit: "contain",
+  overflow: "hidden",
 };
 
 export const OverlayStyle: CSSProperties = {
@@ -11,4 +14,6 @@ export const OverlayStyle: CSSProperties = {
 export const GameViewContainer: CSSProperties = {
   display: "flex",
   justifyContent: "center",
+  height: "100%",
+  width: "100%",
 };

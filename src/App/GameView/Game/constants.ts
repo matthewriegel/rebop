@@ -1,8 +1,10 @@
 const DPR = 1;
+const GAME_WIDTH = 400;
+const HEIGHT_RATIO = 1.5;
 
 export const GAME = {
-  HEIGHT: 800 * DPR,
-  WIDTH: 400 * DPR,
+  HEIGHT: GAME_WIDTH * DPR * HEIGHT_RATIO,
+  WIDTH: GAME_WIDTH * DPR,
   GRAVITY: 300,
   CANNON_OFFSET: 100,
 };
