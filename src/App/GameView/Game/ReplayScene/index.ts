@@ -51,5 +51,10 @@ export class ReplayScene extends Scene {
     pegList.forEach(item =>
       getPeg(scene, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
+
+    scene.input.once("pointerdown", () => {
+      console.log("From SceneA to SceneB");
+      scene.scene.start(KEYS.SCENES.REPLAY);
+    });
   }
 }

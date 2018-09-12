@@ -1,4 +1,4 @@
-import { flatten, times } from "lodash";
+import { flatten, range, times } from "lodash";
 
 interface PegCoordinates {
   x: number;
@@ -11,8 +11,7 @@ export const pegList: PegCoordinates[] = flatten(
   times(
     PEG_WIDTH,
     (xIndex): PegCoordinates[] =>
-      times(
-        PEG_HEIGHT,
+      range(1, PEG_HEIGHT).map(
         (yIndex): PegCoordinates => ({
           x: (xIndex + 0.5) / PEG_WIDTH,
           y: (yIndex + 0.5) / PEG_HEIGHT,
