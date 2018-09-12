@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash";
 import { Scene } from "phaser";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { GAME, KEYS } from "../constants";
@@ -10,11 +11,20 @@ interface ReplayState {
   player?: PhaserImage;
 }
 
+interface ReplayProps {
+  cannonAngle: number; // radians
+}
+
 export class ReplayScene extends Scene {
   private state: ReplayState = {};
+  private props: ReplayProps;
 
   constructor() {
     super(KEYS.SCENES.REPLAY);
+  }
+
+  init(data) {
+    this.props = isEmpty(data) ? { cannonAngle: 3 } : data;
   }
 
   preload() {
@@ -38,23 +48,29 @@ export class ReplayScene extends Scene {
     );
 
     this.state.player = scene.matter.add.image(
-      GAME.WIDTH / 2 + 1,
+      GAME.WIDTH / 2,
       GAME.CANNON_OFFSET,
       KEYS.PLAYER,
     );
 
     const { player } = this.state;
+    const { cannonAngle } = this.props;
+
+    const xVelocity = Math.cos(cannonAngle);
+    const yVelocity = Math.sin(cannonAngle);
+
     player.setCircle(GAME.PLAYER_RADIUS, {});
     player.setBounce(0.9);
     player.setFriction(0, 0);
+    player.setVelocity(xVelocity, yVelocity);
 
     pegList.forEach(item =>
       getPeg(scene, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
 
+    const props: ReplayProps = { cannonAngle: 1 };
     scene.input.once("pointerdown", () => {
-      console.log("From SceneA to SceneB");
-      scene.scene.start(KEYS.SCENES.REPLAY);
+      scene.scene.start(KEYS.SCENES.REPLAY, props);
     });
   }
 }
