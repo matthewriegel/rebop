@@ -1,13 +1,13 @@
 import { flatten, range, times } from "lodash";
 
-interface PegCoordinates {
+export interface PegCoordinates {
   x: number;
   y: number;
 }
 
 const PEG_HEIGHT = 5;
 const PEG_WIDTH = 5;
-export const pegList: PegCoordinates[] = flatten(
+export const PEG_LIST_FIXTURE: PegCoordinates[] = flatten(
   times(
     PEG_WIDTH,
     (xIndex): PegCoordinates[] =>

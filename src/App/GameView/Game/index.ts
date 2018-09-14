@@ -1,6 +1,7 @@
 import { AUTO, Game } from "phaser";
-import { GAME } from "./constants";
-import { ReplayScene } from "./ReplayScene";
+import { PEG_LIST_FIXTURE } from "../fixtures";
+import { GAME, KEYS } from "./constants";
+import { ReplayScene, ReplaySceneProps } from "./ReplayScene";
 
 const PHYSICS_ENGINE = "matter";
 
@@ -34,5 +35,12 @@ export const getGame = (canvas: HTMLCanvasElement) => {
     },
     scene: [ReplayScene],
   };
-  return new Game(config);
+  const game = new Game(config);
+  const props: ReplaySceneProps = {
+    pegs: PEG_LIST_FIXTURE,
+    cannonAngle: 0,
+  };
+
+  game.scene.start(KEYS.SCENES.REPLAY, props);
+  return game;
 };

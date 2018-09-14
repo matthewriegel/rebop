@@ -1,23 +1,24 @@
 import { isEmpty } from "lodash";
 import { Scene } from "phaser";
 import { ASSET_ENDPOINTS } from "../../../../assets";
+import { PegCoordinates } from "../../fixtures";
 import { GAME, KEYS } from "../constants";
-import { pegList } from "./fixtures";
 import { getPeg } from "./getPeg";
 
 type PhaserImage = Phaser.Physics.Matter.Image;
 
-interface ReplayState {
+interface ReplaySceneState {
   player?: PhaserImage;
 }
 
-interface ReplayProps {
+export interface ReplaySceneProps {
   cannonAngle: number; // radians
+  pegs: PegCoordinates[];
 }
 
 export class ReplayScene extends Scene {
-  private state: ReplayState = {};
-  private props: ReplayProps;
+  private state: ReplaySceneState = {};
+  private props: ReplaySceneProps;
 
   constructor() {
     super(KEYS.SCENES.REPLAY);
@@ -54,7 +55,7 @@ export class ReplayScene extends Scene {
     );
 
     const { player } = this.state;
-    const { cannonAngle } = this.props;
+    const { cannonAngle, pegs } = this.props;
 
     const xVelocity = Math.cos(cannonAngle);
     const yVelocity = Math.sin(cannonAngle);
@@ -62,13 +63,16 @@ export class ReplayScene extends Scene {
     player.setCircle(GAME.PLAYER_RADIUS, {});
     player.setBounce(0.9);
     player.setFriction(0, 0);
-    player.setVelocity(xVelocity, yVelocity);
+    player.setVelocity(
+      xVelocity * GAME.CANNON_STRENGTH,
+      yVelocity * GAME.CANNON_STRENGTH,
+    );
 
-    pegList.forEach(item =>
+    pegs.forEach(item =>
       getPeg(scene, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
 
-    const props: ReplayProps = { cannonAngle: 1 };
+    const props: ReplaySceneProps = { cannonAngle: 1, pegs };
     scene.input.once("pointerdown", () => {
       scene.scene.start(KEYS.SCENES.REPLAY, props);
     });

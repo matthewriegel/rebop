@@ -9,11 +9,13 @@ export const GAME = {
   CANNON_OFFSET: 50,
   PEG_RADIUS: 16,
   PLAYER_RADIUS: 16,
+  CANNON_STRENGTH: 10,
 };
 
 export const KEYS = {
   PLAYER: "player",
   SCENES: {
     REPLAY: "replayScene",
+    READY: "readyScene",
   },
 };
