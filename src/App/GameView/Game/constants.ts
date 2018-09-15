@@ -10,6 +10,7 @@ export const GAME = {
   PEG_RADIUS: 16,
   PLAYER_RADIUS: 16,
   CANNON_STRENGTH: 10,
+  SPEED_RESET_THRESHOLD: 0.01,
 };
 
 export const KEYS = {
@@ -18,4 +19,9 @@ export const KEYS = {
     REPLAY: "replayScene",
     READY: "readyScene",
   },
+};
+
+export const EVENTS = {
+  POINTER_DOWN: "pointerdown",
+  SLEEP_START: "sleepstart",
 };

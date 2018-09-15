@@ -32,6 +32,9 @@ export const getGame = (canvas: HTMLCanvasElement) => {
     context,
     physics: {
       default: PHYSICS_ENGINE,
+      matter: {
+        enableSleeping: true,
+      },
     },
     scene: [ReplayScene],
   };

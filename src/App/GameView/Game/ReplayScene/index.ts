@@ -1,14 +1,11 @@
 import { isEmpty } from "lodash";
-import { Scene } from "phaser";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { PegCoordinates } from "../../fixtures";
-import { GAME, KEYS } from "../constants";
+import { EVENTS, GAME, KEYS } from "../constants";
 import { getPeg } from "./getPeg";
 
-type PhaserImage = Phaser.Physics.Matter.Image;
-
 interface ReplaySceneState {
-  player?: PhaserImage;
+  player?: Phaser.Physics.Matter.Image;
 }
 
 export interface ReplaySceneProps {
@@ -16,7 +13,7 @@ export interface ReplaySceneProps {
   pegs: PegCoordinates[];
 }
 
-export class ReplayScene extends Scene {
+export class ReplayScene extends Phaser.Scene {
   private state: ReplaySceneState = {};
   private props: ReplaySceneProps;
 
@@ -29,14 +26,12 @@ export class ReplayScene extends Scene {
   }
 
   preload() {
-    const scene: Phaser.Scene = this;
-    scene.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.BALL);
+    this.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.BALL);
   }
 
   create() {
-    const scene: Phaser.Scene = this;
     // Set world bounds on collision
-    scene.matter.world.setBounds(
+    this.matter.world.setBounds(
       0,
       0,
       GAME.WIDTH,
@@ -48,7 +43,7 @@ export class ReplayScene extends Scene {
       true,
     );
 
-    this.state.player = scene.matter.add.image(
+    this.state.player = this.matter.add.image(
       GAME.WIDTH / 2,
       GAME.CANNON_OFFSET,
       KEYS.PLAYER,
@@ -67,14 +62,18 @@ export class ReplayScene extends Scene {
       xVelocity * GAME.CANNON_STRENGTH,
       yVelocity * GAME.CANNON_STRENGTH,
     );
+    player.setSleepEvents(true, true);
 
     pegs.forEach(item =>
-      getPeg(scene, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
+      getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
 
     const props: ReplaySceneProps = { cannonAngle: 1, pegs };
-    scene.input.once("pointerdown", () => {
-      scene.scene.start(KEYS.SCENES.REPLAY, props);
+    this.input.once(EVENTS.POINTER_DOWN, () => {
+      this.scene.start(KEYS.SCENES.REPLAY, props);
+    });
+    this.matter.world.on(EVENTS.SLEEP_START, () => {
+      this.scene.start(KEYS.SCENES.REPLAY, props);
     });
   }
 }
