@@ -73,16 +73,9 @@ export class ReplayScene extends Phaser.Scene {
       getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
     );
 
-    const props: ReplaySceneProps = { cannonAngle: 1, pegs };
-
-    // If user clicks, reset
-    this.input.once(EVENTS.POINTER_DOWN, () => {
-      this.scene.start(KEYS.SCENES.REPLAY, props);
-    });
-
     // If player body sleeps, rest
     this.matter.world.on(EVENTS.SLEEP_START, () => {
-      this.scene.start(KEYS.SCENES.REPLAY, props);
+      this.scene.start(KEYS.SCENES.READY, { pegs });
     });
   }
 
@@ -92,8 +85,7 @@ export class ReplayScene extends Phaser.Scene {
 
     // If player drops below length of Map, reset
     if (player && player.y > GAME.HEIGHT) {
-      const props: ReplaySceneProps = { cannonAngle: 2, pegs };
-      this.scene.start(KEYS.SCENES.REPLAY, props);
+      this.scene.start(KEYS.SCENES.READY, { pegs });
     }
   }
 }
