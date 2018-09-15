@@ -49,31 +49,63 @@ export class ReadyScene extends Phaser.Scene {
 
     cannon.setRotation(Math.PI * 0.5);
 
+    const firePanelPoints = {
+      xOrigin: 0,
+      yOrigin: GAME.HEIGHT * 0.7,
+      xDelta: GAME.WIDTH,
+      yDelta: GAME.HEIGHT * 0.3,
+    };
     const controlPanelPoints = {
       xOrigin: 0,
       yOrigin: 0,
       xDelta: GAME.WIDTH,
       yDelta: GAME.HEIGHT * 0.7,
     };
-    const cannonRect = new Phaser.Geom.Rectangle(
+
+    // DRAG CONTROLS
+    const dragRect = new Phaser.Geom.Rectangle(
       controlPanelPoints.xOrigin,
       controlPanelPoints.yOrigin,
       controlPanelPoints.xDelta,
       controlPanelPoints.yDelta,
     );
-    const cannonControlPad = this.add.graphics({
+    const dragControlPad = this.add.graphics({
       fillStyle: { color: 0x0000ff, alpha: 0.2 },
     });
-    cannonControlPad.fillRectShape(cannonRect);
-
-    const zone = this.add.zone(
+    dragControlPad.fillRectShape(dragRect);
+    const dragZone = this.add.zone(
       controlPanelPoints.xOrigin + controlPanelPoints.xDelta / 2,
       controlPanelPoints.yOrigin + controlPanelPoints.yDelta / 2,
       controlPanelPoints.xDelta,
       controlPanelPoints.yDelta,
     );
-    zone.setInteractive();
-    this.input.setDraggable(zone);
+    dragZone.setInteractive();
+    this.input.setDraggable(dragZone);
+
+    // FIRE CONTROLS
+    const fireRect = new Phaser.Geom.Rectangle(
+      firePanelPoints.xOrigin,
+      firePanelPoints.yOrigin,
+      firePanelPoints.xDelta,
+      firePanelPoints.yDelta,
+    );
+    const fireControlPad = this.add.graphics({
+      fillStyle: { color: 0xff0000, alpha: 0.2 },
+    });
+    fireControlPad.fillRectShape(fireRect);
+    const fireZone = this.add.zone(
+      firePanelPoints.xOrigin + firePanelPoints.xDelta / 2,
+      firePanelPoints.yOrigin + firePanelPoints.yDelta / 2,
+      firePanelPoints.xDelta,
+      firePanelPoints.yDelta,
+    );
+    fireZone.setInteractive();
+    fireZone.on(EVENTS.POINTER_DOWN, () => {
+      this.scene.start(KEYS.SCENES.REPLAY, {
+        cannonAngle: cannon.rotation,
+        pegs,
+      });
+    });
 
     // Set cannon controls
     this.input.on(EVENTS.DRAG, (pointer, gameObject, dragX, dragY) => {
