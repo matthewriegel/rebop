@@ -25,4 +25,6 @@ export const KEYS = {
 export const EVENTS = {
   POINTER_DOWN: "pointerdown",
   SLEEP_START: "sleepstart",
+  DRAG: "drag",
+  DRAG_START: "dragstart",
 };

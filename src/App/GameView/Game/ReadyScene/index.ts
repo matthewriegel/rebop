@@ -1,11 +1,10 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { PegCoordinates } from "../../fixtures";
-import { GAME, KEYS } from "../constants";
+import { EVENTS, GAME, KEYS } from "../constants";
 import { getPeg } from "../services/getPeg";
 
 interface ReadySceneState {
-  cannonAngle: number; // radians
   cannon?: Phaser.GameObjects.Image;
 }
 
@@ -18,9 +17,7 @@ const DEFAULT_PROPS: ReadySceneProps = {
 };
 
 export class ReadyScene extends Phaser.Scene {
-  private state: ReadySceneState = {
-    cannonAngle: 0,
-  };
+  private state: ReadySceneState = {};
   private props: ReadySceneProps;
 
   constructor() {
@@ -50,10 +47,16 @@ export class ReadyScene extends Phaser.Scene {
     );
     const { cannon } = this.state;
 
+    cannon.setRotation(Math.PI * 0.5);
     cannon.setInteractive();
     this.input.setDraggable(cannon);
-    this.input.on("drag", (pointer, gameObject, dragX, dragY) => {
-      cannon.rotation = dragX / 100;
+
+    // Set cannon controls
+    this.input.on(EVENTS.DRAG, (pointer, gameObject, dragX, dragY) => {
+      const previousX = pointer.position.x;
+      const currentX = pointer.prevPosition.x;
+      const deltaX = currentX - previousX;
+      cannon.setRotation(cannon.rotation + deltaX / 100);
     });
   }
 }
