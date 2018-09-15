@@ -6,7 +6,7 @@ export const GAME = {
   HEIGHT: GAME_WIDTH * DPR * HEIGHT_RATIO,
   WIDTH: GAME_WIDTH * DPR,
   GRAVITY: 300,
-  CANNON_OFFSET: 50,
+  CANNON_POSITION: { x: GAME_WIDTH / 2, y: 50 },
   PEG_RADIUS: 16,
   PLAYER_RADIUS: 16,
   CANNON_STRENGTH: 10,
@@ -15,6 +15,7 @@ export const GAME = {
 
 export const KEYS = {
   PLAYER: "player",
+  CANNON: "cannon",
   SCENES: {
     REPLAY: "replayScene",
     READY: "readyScene",

@@ -2,7 +2,7 @@ import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { PegCoordinates } from "../../fixtures";
 import { EVENTS, GAME, KEYS } from "../constants";
-import { getPeg } from "./getPeg";
+import { getPeg } from "../services/getPeg";
 
 interface ReplaySceneState {
   player?: Phaser.Physics.Matter.Image;
@@ -13,6 +13,11 @@ export interface ReplaySceneProps {
   pegs: PegCoordinates[];
 }
 
+const DEFAULT_PROPS: ReplaySceneProps = {
+  cannonAngle: 3,
+  pegs: [],
+};
+
 export class ReplayScene extends Phaser.Scene {
   private state: ReplaySceneState = {};
   private props: ReplaySceneProps;
@@ -22,7 +27,7 @@ export class ReplayScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.props = isEmpty(data) ? { cannonAngle: 3 } : data;
+    this.props = isEmpty(data) ? DEFAULT_PROPS : data;
   }
 
   preload() {
@@ -44,8 +49,8 @@ export class ReplayScene extends Phaser.Scene {
     );
 
     this.state.player = this.matter.add.image(
-      GAME.WIDTH / 2,
-      GAME.CANNON_OFFSET,
+      GAME.CANNON_POSITION.x,
+      GAME.CANNON_POSITION.y,
       KEYS.PLAYER,
     );
 
@@ -69,9 +74,13 @@ export class ReplayScene extends Phaser.Scene {
     );
 
     const props: ReplaySceneProps = { cannonAngle: 1, pegs };
+
+    // If user clicks, reset
     this.input.once(EVENTS.POINTER_DOWN, () => {
       this.scene.start(KEYS.SCENES.REPLAY, props);
     });
+
+    // If player body sleeps, rest
     this.matter.world.on(EVENTS.SLEEP_START, () => {
       this.scene.start(KEYS.SCENES.REPLAY, props);
     });
@@ -80,6 +89,8 @@ export class ReplayScene extends Phaser.Scene {
   update() {
     const { pegs } = this.props;
     const { player } = this.state;
+
+    // If player drops below length of Map, reset
     if (player && player.y > GAME.HEIGHT) {
       const props: ReplaySceneProps = { cannonAngle: 2, pegs };
       this.scene.start(KEYS.SCENES.REPLAY, props);

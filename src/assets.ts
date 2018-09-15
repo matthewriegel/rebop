@@ -3,4 +3,5 @@ export const ASSET_ENDPOINTS = {
   MARBLE: "assets/marble.png",
   CIRCLE: "assets/circle.png",
   BALL: "assets/ball.png",
+  CANNON: "assets/cannon.png",
 };
