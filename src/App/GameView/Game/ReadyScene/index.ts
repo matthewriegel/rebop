@@ -48,5 +48,12 @@ export class ReadyScene extends Phaser.Scene {
       GAME.CANNON_POSITION.y,
       KEYS.CANNON,
     );
+    const { cannon } = this.state;
+
+    cannon.setInteractive();
+    this.input.setDraggable(cannon);
+    this.input.on("drag", (pointer, gameObject, dragX, dragY) => {
+      cannon.rotation = dragX / 100;
+    });
   }
 }
