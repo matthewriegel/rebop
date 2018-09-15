@@ -40,7 +40,7 @@ export class ReplayScene extends Phaser.Scene {
       true,
       true,
       true,
-      true,
+      false, // No bottom collision so we know when the ball has exited
     );
 
     this.state.player = this.matter.add.image(
@@ -75,5 +75,14 @@ export class ReplayScene extends Phaser.Scene {
     this.matter.world.on(EVENTS.SLEEP_START, () => {
       this.scene.start(KEYS.SCENES.REPLAY, props);
     });
+  }
+
+  update() {
+    const { pegs } = this.props;
+    const { player } = this.state;
+    if (player && player.y > GAME.HEIGHT) {
+      const props: ReplaySceneProps = { cannonAngle: 2, pegs };
+      this.scene.start(KEYS.SCENES.REPLAY, props);
+    }
   }
 }
