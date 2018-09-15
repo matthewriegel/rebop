@@ -48,8 +48,32 @@ export class ReadyScene extends Phaser.Scene {
     const { cannon } = this.state;
 
     cannon.setRotation(Math.PI * 0.5);
-    cannon.setInteractive();
-    this.input.setDraggable(cannon);
+
+    const controlPanelPoints = {
+      xOrigin: 0,
+      yOrigin: 0,
+      xDelta: GAME.WIDTH,
+      yDelta: GAME.HEIGHT * 0.7,
+    };
+    const cannonRect = new Phaser.Geom.Rectangle(
+      controlPanelPoints.xOrigin,
+      controlPanelPoints.yOrigin,
+      controlPanelPoints.xDelta,
+      controlPanelPoints.yDelta,
+    );
+    const cannonControlPad = this.add.graphics({
+      fillStyle: { color: 0x0000ff, alpha: 0.2 },
+    });
+    cannonControlPad.fillRectShape(cannonRect);
+
+    const zone = this.add.zone(
+      controlPanelPoints.xOrigin + controlPanelPoints.xDelta / 2,
+      controlPanelPoints.yOrigin + controlPanelPoints.yDelta / 2,
+      controlPanelPoints.xDelta,
+      controlPanelPoints.yDelta,
+    );
+    zone.setInteractive();
+    this.input.setDraggable(zone);
 
     // Set cannon controls
     this.input.on(EVENTS.DRAG, (pointer, gameObject, dragX, dragY) => {
