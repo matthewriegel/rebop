@@ -1,11 +1,26 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { PegCoordinates } from "../../fixtures";
-import { EVENTS, GAME, KEYS } from "../constants";
+import { GAME } from "../constants";
+import { GameEvents, ImageType, ObjectType, SceneType } from "../definitions";
 import { getPeg } from "../services/getPeg";
+import { removeHitPegs } from "./services";
+
+export const enum PegStatus {
+  default = "default",
+  hit = "hit",
+}
+
+export interface GamePeg {
+  coordinates: PegCoordinates;
+  key: number;
+  status: PegStatus;
+  gameObject: Phaser.Physics.Matter.Image;
+}
 
 interface ReplaySceneState {
   player?: Phaser.Physics.Matter.Image;
+  pegs: GamePeg[];
 }
 
 export interface ReplaySceneProps {
@@ -19,11 +34,11 @@ const DEFAULT_PROPS: ReplaySceneProps = {
 };
 
 export class ReplayScene extends Phaser.Scene {
-  private state: ReplaySceneState = {};
+  private state: ReplaySceneState = { pegs: [] };
   private props: ReplaySceneProps;
 
   constructor() {
-    super(KEYS.SCENES.REPLAY);
+    super(SceneType.Replay);
   }
 
   init(data) {
@@ -31,7 +46,7 @@ export class ReplayScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.BALL);
+    this.load.image(ImageType.Player, ASSET_ENDPOINTS.BALL);
   }
 
   create() {
@@ -51,7 +66,7 @@ export class ReplayScene extends Phaser.Scene {
     this.state.player = this.matter.add.image(
       GAME.CANNON_POSITION.x,
       GAME.CANNON_POSITION.y,
-      KEYS.PLAYER,
+      ImageType.Player,
     );
 
     const { player } = this.state;
@@ -68,24 +83,72 @@ export class ReplayScene extends Phaser.Scene {
       yVelocity * GAME.CANNON_STRENGTH,
     );
     player.setSleepEvents(true, true);
+    player.setName(ObjectType.Player);
 
-    pegs.forEach(item =>
-      getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
+    this.state.pegs = pegs.map(
+      (item, index): GamePeg => {
+        const newPeg = getPeg(
+          this,
+          item.x * GAME.WIDTH,
+          item.y * GAME.HEIGHT,
+          index,
+        );
+        return {
+          coordinates: item,
+          status: PegStatus.default,
+          key: index,
+          gameObject: newPeg,
+        };
+      },
     );
 
     // If player body sleeps, rest
-    this.matter.world.on(EVENTS.SLEEP_START, () => {
-      this.scene.start(KEYS.SCENES.READY, { pegs });
+    this.matter.world.on(GameEvents.SleepStart, () => {
+      this.state.pegs = removeHitPegs(this.state.pegs);
+      // TODO: Set wake event
     });
+
+    this.matter.world.on(
+      GameEvents.CollisionStart,
+      (event, objectA, objectB) => {
+        const imageA: Phaser.Physics.Matter.Image = objectA.gameObject;
+        const imageB: Phaser.Physics.Matter.Image = objectB.gameObject;
+
+        if (isEmpty(imageA) || isEmpty(imageB)) {
+          return;
+        }
+
+        const collidedPlayer = [imageA, imageB].find(
+          image => image.name === ObjectType.Player,
+        );
+
+        const collidedPeg = [imageA, imageB].find(
+          image => image.name === ObjectType.Peg,
+        );
+
+        if (!collidedPlayer || !collidedPeg) {
+          return;
+        }
+
+        this.state.pegs = this.state.pegs.map(peg => {
+          if (peg.key !== collidedPeg.data.values.index) {
+            return peg;
+          }
+          peg.status = PegStatus.hit;
+          return peg;
+        });
+      },
+    );
   }
 
   update() {
-    const { pegs } = this.props;
-    const { player } = this.state;
+    const { player, pegs } = this.state;
 
     // If player drops below length of Map, reset
     if (player && player.y > GAME.HEIGHT) {
-      this.scene.start(KEYS.SCENES.READY, { pegs });
+      const newPegList = removeHitPegs(this.state.pegs);
+      const newCoordinateList = newPegList.map(peg => peg.coordinates);
+      this.scene.start(SceneType.Ready, { pegs: newCoordinateList });
     }
   }
 }

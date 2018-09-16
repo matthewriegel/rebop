@@ -1,7 +1,8 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { PegCoordinates } from "../../fixtures";
-import { EVENTS, GAME, KEYS } from "../constants";
+import { GAME } from "../constants";
+import { GameEvents, ImageType, SceneType } from "../definitions";
 import { getPeg } from "../services/getPeg";
 
 interface ReadySceneState {
@@ -21,7 +22,7 @@ export class ReadyScene extends Phaser.Scene {
   private props: ReadySceneProps;
 
   constructor() {
-    super(KEYS.SCENES.READY);
+    super(SceneType.Ready);
   }
 
   init(data) {
@@ -29,50 +30,33 @@ export class ReadyScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image(KEYS.PLAYER, ASSET_ENDPOINTS.BALL);
-    this.load.image(KEYS.CANNON, ASSET_ENDPOINTS.CANNON);
+    this.load.image(ImageType.Player, ASSET_ENDPOINTS.BALL);
+    this.load.image(ImageType.Cannon, ASSET_ENDPOINTS.CANNON);
   }
 
   create() {
     const { pegs } = this.props;
 
-    pegs.forEach(item =>
-      getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT),
+    pegs.forEach((item, index) =>
+      getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT, index),
     );
 
     this.state.cannon = this.add.image(
       GAME.CANNON_POSITION.x,
       GAME.CANNON_POSITION.y,
-      KEYS.CANNON,
+      ImageType.Cannon,
     );
     const { cannon } = this.state;
 
     cannon.setRotation(Math.PI * 0.5);
 
-    const firePanelPoints = {
-      xOrigin: 0,
-      yOrigin: GAME.HEIGHT * 0.7,
-      xDelta: GAME.WIDTH,
-      yDelta: GAME.HEIGHT * 0.3,
-    };
+    // DRAG CONTROLS
     const controlPanelPoints = {
       xOrigin: 0,
       yOrigin: 0,
       xDelta: GAME.WIDTH,
       yDelta: GAME.HEIGHT * 0.7,
     };
-
-    // DRAG CONTROLS
-    const dragRect = new Phaser.Geom.Rectangle(
-      controlPanelPoints.xOrigin,
-      controlPanelPoints.yOrigin,
-      controlPanelPoints.xDelta,
-      controlPanelPoints.yDelta,
-    );
-    const dragControlPad = this.add.graphics({
-      fillStyle: { color: 0x0000ff, alpha: 0.2 },
-    });
-    dragControlPad.fillRectShape(dragRect);
     const dragZone = this.add.zone(
       controlPanelPoints.xOrigin + controlPanelPoints.xDelta / 2,
       controlPanelPoints.yOrigin + controlPanelPoints.yDelta / 2,
@@ -83,6 +67,12 @@ export class ReadyScene extends Phaser.Scene {
     this.input.setDraggable(dragZone);
 
     // FIRE CONTROLS
+    const firePanelPoints = {
+      xOrigin: 0,
+      yOrigin: GAME.HEIGHT * 0.7,
+      xDelta: GAME.WIDTH,
+      yDelta: GAME.HEIGHT * 0.3,
+    };
     const fireRect = new Phaser.Geom.Rectangle(
       firePanelPoints.xOrigin,
       firePanelPoints.yOrigin,
@@ -100,15 +90,15 @@ export class ReadyScene extends Phaser.Scene {
       firePanelPoints.yDelta,
     );
     fireZone.setInteractive();
-    fireZone.on(EVENTS.POINTER_DOWN, () => {
-      this.scene.start(KEYS.SCENES.REPLAY, {
+    fireZone.on(GameEvents.PointerDown, () => {
+      this.scene.start(SceneType.Replay, {
         cannonAngle: cannon.rotation,
         pegs,
       });
     });
 
     // Set cannon controls
-    this.input.on(EVENTS.DRAG, (pointer, gameObject, dragX, dragY) => {
+    this.input.on(GameEvents.Drag, (pointer, gameObject, dragX, dragY) => {
       const previousX = pointer.position.x;
       const currentX = pointer.prevPosition.x;
       const deltaX = currentX - previousX;

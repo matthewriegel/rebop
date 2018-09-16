@@ -1,16 +1,24 @@
-import { GAME, KEYS } from "../constants";
+import { GAME } from "../constants";
+import { ImageType, ObjectType } from "../definitions";
+
+export interface PegData {
+  index: number;
+}
 
 export const getPeg = (
   scene: Phaser.Scene,
   xCoordinate: number,
   yCoordinate: number,
+  index: number,
 ): Phaser.Physics.Matter.Image => {
-  const platform = scene.matter.add.image(
+  const peg = scene.matter.add.image(
     xCoordinate,
     yCoordinate,
-    KEYS.PLAYER,
+    ImageType.Player,
   );
-  platform.setCircle(GAME.PEG_RADIUS, {});
-  platform.setStatic(true);
-  return platform;
+  peg.setCircle(GAME.PEG_RADIUS, {});
+  peg.setStatic(true);
+  peg.setName(ObjectType.Peg);
+  peg.setData({ index } as PegData);
+  return peg;
 };

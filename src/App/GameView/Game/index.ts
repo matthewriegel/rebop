@@ -1,6 +1,7 @@
 import { AUTO, Game } from "phaser";
 import { PEG_LIST_FIXTURE } from "../fixtures";
-import { GAME, KEYS } from "./constants";
+import { GAME } from "./constants";
+import { SceneType } from "./definitions";
 import { ReadyScene } from "./ReadyScene";
 import { ReplayScene, ReplaySceneProps } from "./ReplayScene";
 
@@ -45,6 +46,6 @@ export const getGame = (canvas: HTMLCanvasElement) => {
     cannonAngle: 0,
   };
 
-  game.scene.start(KEYS.SCENES.READY, props);
+  game.scene.start(SceneType.Ready, props);
   return game;
 };

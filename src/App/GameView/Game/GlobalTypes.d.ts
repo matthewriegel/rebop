@@ -9939,7 +9939,7 @@ declare namespace Phaser {
              * @param key The key to set the value for. Or an object or key value pairs. If an object the `data` argument is ignored.
              * @param data The value to set for the given key. If an object is provided as the key this argument is ignored.
              */
-            setData(key: string | object, data: any): this;
+            setData(key: string | object, data?: any): this;
 
             /**
              * Retrieves the value for the given key in this Game Objects Data Manager, or undefined if it doesn't exist.

@@ -12,19 +12,3 @@ export const GAME = {
   CANNON_STRENGTH: 10,
   SPEED_RESET_THRESHOLD: 0.01,
 };
-
-export const KEYS = {
-  PLAYER: "player",
-  CANNON: "cannon",
-  SCENES: {
-    REPLAY: "replayScene",
-    READY: "readyScene",
-  },
-};
-
-export const EVENTS = {
-  POINTER_DOWN: "pointerdown",
-  SLEEP_START: "sleepstart",
-  DRAG: "drag",
-  DRAG_START: "dragstart",
-};
