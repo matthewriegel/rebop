@@ -21,3 +21,8 @@ export const enum GameEvents {
   DragStart = "dragstart",
   CollisionStart = "collisionstart",
 }
+
+export interface PegCoordinates {
+  x: number;
+  y: number;
+}

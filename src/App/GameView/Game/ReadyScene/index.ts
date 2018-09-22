@@ -1,8 +1,12 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
-import { PegCoordinates } from "../../fixtures";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, SceneType } from "../definitions";
+import {
+  GameEvents,
+  ImageType,
+  PegCoordinates,
+  SceneType,
+} from "../definitions";
 import { getPeg } from "../services/getPeg";
 
 interface ReadySceneState {

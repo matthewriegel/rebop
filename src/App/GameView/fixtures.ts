@@ -1,9 +1,5 @@
 import { flatten, range, times } from "lodash";
-
-export interface PegCoordinates {
-  x: number;
-  y: number;
-}
+import { PegCoordinates } from "./Game/definitions";
 
 const PEG_HEIGHT = 5;
 const PEG_WIDTH = 5;

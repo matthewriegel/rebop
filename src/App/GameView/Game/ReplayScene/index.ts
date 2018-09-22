@@ -1,22 +1,22 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
-import { PegCoordinates } from "../../fixtures";
+import {
+  ResetableTimeout,
+  resetableTimeout,
+} from "../../../../global/util/timeout";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, ObjectType, SceneType } from "../definitions";
+import {
+  GameEvents,
+  ImageType,
+  ObjectType,
+  PegCoordinates,
+  SceneType,
+} from "../definitions";
 import { getPeg } from "../services/getPeg";
+import { CLEAR_PEG_INTERVAL } from "./constants";
+import { GamePeg, PegStatus } from "./definitionts";
+import { getNewPlayer } from "./getNewPlayer";
 import { removeHitPegs } from "./services";
-
-export const enum PegStatus {
-  default = "default",
-  hit = "hit",
-}
-
-export interface GamePeg {
-  coordinates: PegCoordinates;
-  key: number;
-  status: PegStatus;
-  gameObject: Phaser.Physics.Matter.Image;
-}
 
 interface ReplaySceneState {
   player?: Phaser.Physics.Matter.Image;
@@ -37,6 +37,8 @@ export class ReplayScene extends Phaser.Scene {
   private state: ReplaySceneState = { pegs: [] };
   private props: ReplaySceneProps;
 
+  private clearPegTimeout: ResetableTimeout;
+
   constructor() {
     super(SceneType.Replay);
   }
@@ -49,7 +51,12 @@ export class ReplayScene extends Phaser.Scene {
     this.load.image(ImageType.Player, ASSET_ENDPOINTS.BALL);
   }
 
+  destroy() {
+    this.clearPegTimeout.destroy();
+  }
+
   create() {
+    this.clearPegTimeout = resetableTimeout(this.clearPegs, CLEAR_PEG_INTERVAL);
     // Set world bounds on collision
     this.matter.world.setBounds(
       0,
@@ -63,27 +70,9 @@ export class ReplayScene extends Phaser.Scene {
       false, // No bottom collision so we know when the ball has exited
     );
 
-    this.state.player = this.matter.add.image(
-      GAME.CANNON_POSITION.x,
-      GAME.CANNON_POSITION.y,
-      ImageType.Player,
-    );
-
-    const { player } = this.state;
     const { cannonAngle, pegs } = this.props;
 
-    const xVelocity = Math.cos(cannonAngle);
-    const yVelocity = Math.sin(cannonAngle);
-
-    player.setCircle(GAME.PLAYER_RADIUS, {});
-    player.setBounce(0.9);
-    player.setFriction(0, 0);
-    player.setVelocity(
-      xVelocity * GAME.CANNON_STRENGTH,
-      yVelocity * GAME.CANNON_STRENGTH,
-    );
-    player.setSleepEvents(true, true);
-    player.setName(ObjectType.Player);
+    this.state.player = getNewPlayer(this, { cannonAngle });
 
     this.state.pegs = pegs.map(
       (item, index): GamePeg => {
@@ -101,12 +90,6 @@ export class ReplayScene extends Phaser.Scene {
         };
       },
     );
-
-    // If player body sleeps, rest
-    this.matter.world.on(GameEvents.SleepStart, () => {
-      this.state.pegs = removeHitPegs(this.state.pegs);
-      // TODO: Set wake event
-    });
 
     this.matter.world.on(
       GameEvents.CollisionStart,
@@ -134,6 +117,12 @@ export class ReplayScene extends Phaser.Scene {
           if (peg.key !== collidedPeg.data.values.index) {
             return peg;
           }
+
+          if (peg.status === PegStatus.hit) {
+            return peg;
+          }
+
+          this.clearPegTimeout.reset();
           peg.status = PegStatus.hit;
           return peg;
         });
@@ -146,9 +135,21 @@ export class ReplayScene extends Phaser.Scene {
 
     // If player drops below length of Map, reset
     if (player && player.y > GAME.HEIGHT) {
-      const newPegList = removeHitPegs(this.state.pegs);
-      const newCoordinateList = newPegList.map(peg => peg.coordinates);
-      this.scene.start(SceneType.Ready, { pegs: newCoordinateList });
+      this.clearPegs();
+      this.startNextScene();
     }
   }
+
+  private startNextScene = () => {
+    this.clearPegs();
+    const newPegList = this.state.pegs;
+    const newCoordinateList = newPegList.map(peg => peg.coordinates);
+    this.destroy();
+    this.scene.start(SceneType.Ready, { pegs: newCoordinateList });
+  };
+
+  private clearPegs = () => {
+    this.clearPegTimeout.reset();
+    this.state.pegs = removeHitPegs(this.state.pegs);
+  };
 }
