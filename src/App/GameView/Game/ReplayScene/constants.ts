@@ -1,1 +1,1 @@
-export const CLEAR_PEG_INTERVAL = 5000;
+export const CLEAR_PEG_INTERVAL = 2000;

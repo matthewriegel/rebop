@@ -27,7 +27,6 @@ export const resetableTimeout = (
     if (!destroyed) {
       clearTimeout(timeout);
     }
-    console.log("timeout reset");
     destroyed = false;
     timeout = setTimeout(timeoutTriggered, time);
   };

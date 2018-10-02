@@ -1,17 +1,8 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
-import {
-  ResetableTimeout,
-  resetableTimeout,
-} from "../../../../global/util/timeout";
+import { ResetableTimeout, resetableTimeout } from "../../../../global/util/timeout";
 import { GAME } from "../constants";
-import {
-  GameEvents,
-  ImageType,
-  ObjectType,
-  PegCoordinates,
-  SceneType,
-} from "../definitions";
+import { GameEvents, ImageType, ObjectType, PegCoordinates, SceneType } from "../definitions";
 import { getPeg } from "../services/getPeg";
 import { CLEAR_PEG_INTERVAL } from "./constants";
 import { GamePeg, PegStatus } from "./definitionts";
@@ -94,6 +85,8 @@ export class ReplayScene extends Phaser.Scene {
     this.matter.world.on(
       GameEvents.CollisionStart,
       (event, objectA, objectB) => {
+        this.clearPegTimeout.reset();
+
         const imageA: Phaser.Physics.Matter.Image = objectA.gameObject;
         const imageB: Phaser.Physics.Matter.Image = objectB.gameObject;
 
@@ -122,7 +115,6 @@ export class ReplayScene extends Phaser.Scene {
             return peg;
           }
 
-          this.clearPegTimeout.reset();
           peg.status = PegStatus.hit;
           return peg;
         });
