@@ -26,3 +26,9 @@ export interface PegCoordinates {
   x: number;
   y: number;
 }
+
+export interface TurnProps {
+  pegs: PegCoordinates[];
+  cannonAngle?: number; // radians
+  turnOver: () => void;
+}

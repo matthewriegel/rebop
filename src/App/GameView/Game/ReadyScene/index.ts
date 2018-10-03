@@ -1,36 +1,22 @@
-import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
 import { GAME } from "../constants";
-import {
-  GameEvents,
-  ImageType,
-  PegCoordinates,
-  SceneType,
-} from "../definitions";
+import { GameEvents, ImageType, SceneType, TurnProps } from "../definitions";
 import { getPeg } from "../services/getPeg";
 
 interface ReadySceneState {
   cannon?: Phaser.GameObjects.Image;
 }
 
-export interface ReadySceneProps {
-  pegs: PegCoordinates[];
-}
-
-const DEFAULT_PROPS: ReadySceneProps = {
-  pegs: [],
-};
-
 export class ReadyScene extends Phaser.Scene {
   private state: ReadySceneState = {};
-  private props: ReadySceneProps;
+  private props: TurnProps;
 
   constructor() {
     super(SceneType.Ready);
   }
 
   init(data) {
-    this.props = isEmpty(data) ? DEFAULT_PROPS : data;
+    this.props = data;
   }
 
   preload() {
@@ -39,7 +25,7 @@ export class ReadyScene extends Phaser.Scene {
   }
 
   create() {
-    const { pegs } = this.props;
+    const { pegs = [] } = this.props;
 
     pegs.forEach((item, index) =>
       getPeg(this, item.x * GAME.WIDTH, item.y * GAME.HEIGHT, index),
@@ -95,10 +81,12 @@ export class ReadyScene extends Phaser.Scene {
     );
     fireZone.setInteractive();
     fireZone.on(GameEvents.PointerDown, () => {
-      this.scene.start(SceneType.Replay, {
+      const newProps = {
+        ...this.props,
         cannonAngle: cannon.rotation,
-        pegs,
-      });
+      };
+
+      this.scene.start(SceneType.Replay, newProps);
     });
 
     // Set cannon controls

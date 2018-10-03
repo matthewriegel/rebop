@@ -1,13 +1,14 @@
 import { AUTO, Game } from "phaser";
-import { PEG_LIST_FIXTURE } from "../fixtures";
 import { GAME } from "./constants";
-import { SceneType } from "./definitions";
+import { SceneType, TurnProps } from "./definitions";
 import { ReadyScene } from "./ReadyScene";
-import { ReplayScene, ReplaySceneProps } from "./ReplayScene";
+import { ReplayScene } from "./ReplayScene";
 
 const PHYSICS_ENGINE = "matter";
 
-export const getGame = (canvas: HTMLCanvasElement) => {
+export const getGame = (canvas: HTMLCanvasElement, props: TurnProps) => {
+  const { cannonAngle } = props;
+
   const contextConfig = {
     alpha: false,
     depth: false,
@@ -38,11 +39,12 @@ export const getGame = (canvas: HTMLCanvasElement) => {
     scene: [ReadyScene, ReplayScene],
   };
   const game = new Game(config);
-  const props: ReplaySceneProps = {
-    pegs: PEG_LIST_FIXTURE,
-    cannonAngle: 0,
-  };
 
-  game.scene.start(SceneType.Ready, props);
+  const sceneStart =
+    cannonAngle === undefined || cannonAngle === null
+      ? SceneType.Ready
+      : SceneType.Replay;
+
+  game.scene.start(sceneStart, props);
   return game;
 };

@@ -1,8 +1,17 @@
 import { isEmpty } from "lodash";
 import { ASSET_ENDPOINTS } from "../../../../assets";
-import { ResetableTimeout, resetableTimeout } from "../../../../global/util/timeout";
+import {
+  ResetableTimeout,
+  resetableTimeout,
+} from "../../../../global/util/timeout";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, ObjectType, PegCoordinates, SceneType } from "../definitions";
+import {
+  GameEvents,
+  ImageType,
+  ObjectType,
+  SceneType,
+  TurnProps,
+} from "../definitions";
 import { getPeg } from "../services/getPeg";
 import { CLEAR_PEG_INTERVAL } from "./constants";
 import { GamePeg, PegStatus } from "./definitionts";
@@ -14,19 +23,9 @@ interface ReplaySceneState {
   pegs: GamePeg[];
 }
 
-export interface ReplaySceneProps {
-  cannonAngle: number; // radians
-  pegs: PegCoordinates[];
-}
-
-const DEFAULT_PROPS: ReplaySceneProps = {
-  cannonAngle: 3,
-  pegs: [],
-};
-
 export class ReplayScene extends Phaser.Scene {
   private state: ReplaySceneState = { pegs: [] };
-  private props: ReplaySceneProps;
+  private props: TurnProps;
 
   private clearPegTimeout: ResetableTimeout;
 
@@ -35,7 +34,7 @@ export class ReplayScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.props = isEmpty(data) ? DEFAULT_PROPS : data;
+    this.props = data;
   }
 
   preload() {
@@ -61,7 +60,7 @@ export class ReplayScene extends Phaser.Scene {
       false, // No bottom collision so we know when the ball has exited
     );
 
-    const { cannonAngle, pegs } = this.props;
+    const { cannonAngle, pegs = [] } = this.props;
 
     this.state.player = getNewPlayer(this, { cannonAngle });
 
@@ -123,21 +122,21 @@ export class ReplayScene extends Phaser.Scene {
   }
 
   update() {
-    const { player, pegs } = this.state;
+    const { player } = this.state;
 
     // If player drops below length of Map, reset
-    if (player && player.y > GAME.HEIGHT) {
-      this.clearPegs();
+    if (player && player.active && player.y > GAME.HEIGHT) {
       this.startNextScene();
     }
   }
 
   private startNextScene = () => {
     this.clearPegs();
+    this.state.player && this.state.player.destroy();
     const newPegList = this.state.pegs;
     const newCoordinateList = newPegList.map(peg => peg.coordinates);
     this.destroy();
-    this.scene.start(SceneType.Ready, { pegs: newCoordinateList });
+    this.props.turnOver();
   };
 
   private clearPegs = () => {
