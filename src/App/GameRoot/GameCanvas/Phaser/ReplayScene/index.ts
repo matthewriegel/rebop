@@ -132,7 +132,7 @@ export class ReplayScene extends Phaser.Scene {
     const newPegList = this.state.pegs;
     const newCoordinateList = newPegList.map(peg => peg.coordinates);
     this.destroy();
-    this.props.endTurn();
+    this.props.endTurn(newCoordinateList);
   };
 
   private clearPegs = () => {

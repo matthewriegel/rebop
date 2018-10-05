@@ -6,6 +6,6 @@ export interface PegCoordinates {
 export interface TurnProps {
   pegs: PegCoordinates[];
   cannonAngle?: number | null; // radians
-  endTurn: () => void;
+  endTurn: (pegs: PegCoordinates[]) => void;
   fireCannon: (cannonAngle: number) => void;
 }
