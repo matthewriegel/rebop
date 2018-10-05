@@ -12,8 +12,7 @@ class GameCanvas extends React.Component<TurnProps> {
   }
 
   public componentDidUpdate() {
-    this.destroyGame();
-    this.initializeGame();
+    this.setScene();
   }
 
   public componentWillUnmount() {
@@ -40,6 +39,12 @@ class GameCanvas extends React.Component<TurnProps> {
     } else {
       console.log("reference not mounted properly");
     }
+  };
+
+  private setScene = () => {
+    const scene = getScene(this.props);
+    this.game.scene.remove(this.game.scene.scenes[0]);
+    this.game.scene.add("scene", scene, true);
   };
 
   private destroyGame = () => {
