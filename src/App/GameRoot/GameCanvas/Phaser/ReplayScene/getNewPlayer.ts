@@ -1,5 +1,6 @@
+import { PegCoordinates } from "../../definitions";
 import { GAME } from "../constants";
-import { ImageType, ObjectType, PegCoordinates } from "../definitions";
+import { ImageType, ObjectType } from "../definitions";
 
 export interface Props {
   cannonAngle?: number;

@@ -1,18 +1,13 @@
 import { isEmpty } from "lodash";
-import { ASSET_ENDPOINTS } from "../../../../assets";
+import { getPeg } from "..";
+import { ASSET_ENDPOINTS } from "../../../../../assets";
 import {
   ResetableTimeout,
   resetableTimeout,
-} from "../../../../global/util/timeout";
+} from "../../../../../global/util/timeout";
+import { TurnProps } from "../../definitions";
 import { GAME } from "../constants";
-import {
-  GameEvents,
-  ImageType,
-  ObjectType,
-  SceneType,
-  TurnProps,
-} from "../definitions";
-import { getPeg } from "../services/getPeg";
+import { GameEvents, ImageType, ObjectType, SceneType } from "../definitions";
 import { CLEAR_PEG_INTERVAL } from "./constants";
 import { GamePeg, PegStatus } from "./definitionts";
 import { getNewPlayer } from "./getNewPlayer";
@@ -29,12 +24,9 @@ export class ReplayScene extends Phaser.Scene {
 
   private clearPegTimeout: ResetableTimeout;
 
-  constructor() {
+  constructor(props: TurnProps) {
     super(SceneType.Replay);
-  }
-
-  init(data) {
-    this.props = data;
+    this.props = props;
   }
 
   preload() {
@@ -61,6 +53,10 @@ export class ReplayScene extends Phaser.Scene {
     );
 
     const { cannonAngle, pegs = [] } = this.props;
+
+    if (cannonAngle === null) {
+      throw new Error("Cannon start replay with null cannonAngle");
+    }
 
     this.state.player = getNewPlayer(this, { cannonAngle });
 
@@ -136,7 +132,7 @@ export class ReplayScene extends Phaser.Scene {
     const newPegList = this.state.pegs;
     const newCoordinateList = newPegList.map(peg => peg.coordinates);
     this.destroy();
-    this.props.turnOver();
+    this.props.endTurn();
   };
 
   private clearPegs = () => {

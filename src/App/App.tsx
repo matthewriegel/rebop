@@ -1,6 +1,6 @@
 import * as React from "react";
-import GameView from "./GameView";
+import GameRoot from "./GameRoot";
 
-const App = () => <GameView />;
+const App = () => <GameRoot />;
 
 export default App;

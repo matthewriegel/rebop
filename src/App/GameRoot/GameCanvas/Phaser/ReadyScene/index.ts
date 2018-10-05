@@ -1,7 +1,8 @@
-import { ASSET_ENDPOINTS } from "../../../../assets";
+import { getPeg } from "..";
+import { ASSET_ENDPOINTS } from "../../../../../assets";
+import { TurnProps } from "../../definitions";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, SceneType, TurnProps } from "../definitions";
-import { getPeg } from "../services/getPeg";
+import { GameEvents, ImageType, SceneType } from "../definitions";
 
 interface ReadySceneState {
   cannon?: Phaser.GameObjects.Image;
@@ -11,12 +12,9 @@ export class ReadyScene extends Phaser.Scene {
   private state: ReadySceneState = {};
   private props: TurnProps;
 
-  constructor() {
+  constructor(props: TurnProps) {
     super(SceneType.Ready);
-  }
-
-  init(data) {
-    this.props = data;
+    this.props = props;
   }
 
   preload() {
@@ -81,12 +79,7 @@ export class ReadyScene extends Phaser.Scene {
     );
     fireZone.setInteractive();
     fireZone.on(GameEvents.PointerDown, () => {
-      const newProps = {
-        ...this.props,
-        cannonAngle: cannon.rotation,
-      };
-
-      this.scene.start(SceneType.Replay, newProps);
+      this.props.fireCannon(cannon.rotation);
     });
 
     // Set cannon controls

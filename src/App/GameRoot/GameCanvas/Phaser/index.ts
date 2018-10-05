@@ -1,14 +1,16 @@
 import { AUTO, Game } from "phaser";
+import { TurnProps } from "../definitions";
 import { GAME } from "./constants";
-import { SceneType, TurnProps } from "./definitions";
+import { ImageType, ObjectType, PegData } from "./definitions";
 import { ReadyScene } from "./ReadyScene";
 import { ReplayScene } from "./ReplayScene";
 
 const PHYSICS_ENGINE = "matter";
 
-export const getGame = (canvas: HTMLCanvasElement, props: TurnProps) => {
-  const { cannonAngle } = props;
-
+export const getGame = (
+  canvas: HTMLCanvasElement,
+  scene: Phaser.Scene,
+): Game => {
   const contextConfig = {
     alpha: false,
     depth: false,
@@ -36,15 +38,29 @@ export const getGame = (canvas: HTMLCanvasElement, props: TurnProps) => {
     physics: {
       default: PHYSICS_ENGINE,
     },
-    scene: [ReadyScene, ReplayScene],
+    scene,
   };
   const game = new Game(config);
-
-  const sceneStart =
-    cannonAngle === undefined || cannonAngle === null
-      ? SceneType.Ready
-      : SceneType.Replay;
-
-  game.scene.start(sceneStart, props);
   return game;
 };
+
+export const getPeg = (
+  scene: Phaser.Scene,
+  xCoordinate: number,
+  yCoordinate: number,
+  index: number,
+): Phaser.Physics.Matter.Image => {
+  const peg = scene.matter.add.image(
+    xCoordinate,
+    yCoordinate,
+    ImageType.Player,
+  );
+  peg.setCircle(GAME.PEG_RADIUS, {});
+  peg.setStatic(true);
+  peg.setName(ObjectType.Peg);
+  peg.setData({ index } as PegData);
+  return peg;
+};
+
+export const getScene = (props: TurnProps): Phaser.Scene =>
+  props.cannonAngle === null ? new ReadyScene(props) : new ReplayScene(props);
