@@ -6,15 +6,3 @@ export const CanvasStyle: CSSProperties = {
   objectFit: "contain",
   overflow: "hidden",
 };
-
-export const OverlayStyle: CSSProperties = {
-  position: "fixed",
-  color: "white",
-};
-
-export const GameViewContainer: CSSProperties = {
-  display: "flex",
-  justifyContent: "center",
-  height: "100%",
-  width: "100%",
-};

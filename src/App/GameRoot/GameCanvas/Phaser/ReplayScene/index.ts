@@ -7,7 +7,7 @@ import {
 } from "../../../../../global/util/timeout";
 import { TurnProps } from "../../../definitions";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, ObjectType, SceneType } from "../definitions";
+import { GameEvents, ImageType, ObjectType, PegData } from "../definitions";
 import { CLEAR_PEG_INTERVAL } from "./constants";
 import { GamePeg, PegStatus } from "./definitionts";
 import { getNewPlayer } from "./getNewPlayer";
@@ -25,7 +25,7 @@ export class ReplayScene extends Phaser.Scene {
   private clearPegTimeout: ResetableTimeout;
 
   constructor(props: TurnProps) {
-    super(SceneType.Replay);
+    super(props.sceneKey);
     this.props = props;
   }
 
@@ -101,18 +101,8 @@ export class ReplayScene extends Phaser.Scene {
           return;
         }
 
-        this.state.pegs = this.state.pegs.map(peg => {
-          if (peg.key !== collidedPeg.data.values.index) {
-            return peg;
-          }
-
-          if (peg.status === PegStatus.hit) {
-            return peg;
-          }
-
-          peg.status = PegStatus.hit;
-          return peg;
-        });
+        const pegData = collidedPeg.data.values as PegData;
+        this.pegHit(pegData);
       },
     );
   }
@@ -138,5 +128,22 @@ export class ReplayScene extends Phaser.Scene {
   private clearPegs = () => {
     this.clearPegTimeout.reset();
     this.state.pegs = removeHitPegs(this.state.pegs);
+  };
+
+  private pegHit = (collidedPegData: PegData) => {
+    // removePegFromList
+    this.state.pegs = this.state.pegs.map(peg => {
+      if (peg.key !== collidedPegData.index) {
+        return peg;
+      }
+
+      if (peg.status === PegStatus.hit) {
+        return peg;
+      }
+
+      this.props.pointsRecieved(100);
+      peg.status = PegStatus.hit;
+      return peg;
+    });
   };
 }

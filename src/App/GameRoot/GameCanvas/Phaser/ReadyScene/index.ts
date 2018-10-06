@@ -2,7 +2,7 @@ import { getPeg } from "..";
 import { ASSET_ENDPOINTS } from "../../../../../assets";
 import { TurnProps } from "../../../definitions";
 import { GAME } from "../constants";
-import { GameEvents, ImageType, SceneType } from "../definitions";
+import { GameEvents, ImageType } from "../definitions";
 
 interface ReadySceneState {
   cannon?: Phaser.GameObjects.Image;
@@ -13,7 +13,7 @@ export class ReadyScene extends Phaser.Scene {
   private props: TurnProps;
 
   constructor(props: TurnProps) {
-    super(SceneType.Ready);
+    super(props.sceneKey);
     this.props = props;
   }
 

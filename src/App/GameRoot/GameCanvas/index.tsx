@@ -11,8 +11,11 @@ class GameCanvas extends React.Component<TurnProps> {
     this.initializeGame();
   }
 
-  public componentDidUpdate() {
-    this.setScene();
+  public componentDidUpdate(prevProps: TurnProps) {
+    const { sceneKey } = this.props;
+    if (sceneKey !== prevProps.sceneKey) {
+      this.setScene(prevProps.sceneKey);
+    }
   }
 
   public componentWillUnmount() {
@@ -38,10 +41,11 @@ class GameCanvas extends React.Component<TurnProps> {
     }
   };
 
-  private setScene = () => {
+  private setScene = (oldKey: string) => {
+    const { sceneKey } = this.props;
     const scene = getScene(this.props);
-    this.game.scene.remove(this.game.scene.scenes[0]);
-    this.game.scene.add("scene", scene, true);
+    this.game.scene.add(sceneKey, scene, true);
+    this.game.scene.remove(oldKey);
   };
 
   private destroyGame = () => {
