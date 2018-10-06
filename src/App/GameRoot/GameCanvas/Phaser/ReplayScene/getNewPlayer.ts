@@ -1,4 +1,4 @@
-import { PegCoordinates } from "../../definitions";
+import { PegCoordinates } from "../../../definitions";
 import { GAME } from "../constants";
 import { ImageType, ObjectType } from "../definitions";
 

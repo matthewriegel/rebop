@@ -5,7 +5,7 @@ import {
   ResetableTimeout,
   resetableTimeout,
 } from "../../../../../global/util/timeout";
-import { TurnProps } from "../../definitions";
+import { TurnProps } from "../../../definitions";
 import { GAME } from "../constants";
 import { GameEvents, ImageType, ObjectType, SceneType } from "../definitions";
 import { CLEAR_PEG_INTERVAL } from "./constants";

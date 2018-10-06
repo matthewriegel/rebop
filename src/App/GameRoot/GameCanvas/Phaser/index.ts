@@ -1,5 +1,5 @@
 import { AUTO, Game } from "phaser";
-import { TurnProps } from "../definitions";
+import { TurnProps } from "../../definitions";
 import { GAME } from "./constants";
 import { ImageType, ObjectType, PegData } from "./definitions";
 import { ReadyScene } from "./ReadyScene";

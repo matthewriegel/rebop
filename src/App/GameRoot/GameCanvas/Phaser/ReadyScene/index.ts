@@ -1,6 +1,6 @@
 import { getPeg } from "..";
 import { ASSET_ENDPOINTS } from "../../../../../assets";
-import { TurnProps } from "../../definitions";
+import { TurnProps } from "../../../definitions";
 import { GAME } from "../constants";
 import { GameEvents, ImageType, SceneType } from "../definitions";
 

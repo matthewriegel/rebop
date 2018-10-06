@@ -9,6 +9,7 @@ export const CanvasStyle: CSSProperties = {
 
 export const OverlayStyle: CSSProperties = {
   position: "fixed",
+  color: "white",
 };
 
 export const GameViewContainer: CSSProperties = {

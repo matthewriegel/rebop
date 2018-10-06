@@ -1,4 +1,4 @@
-import { PegCoordinates } from "../../definitions";
+import { PegCoordinates } from "../../../definitions";
 
 export const enum PegStatus {
   default = "default",
