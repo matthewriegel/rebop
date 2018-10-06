@@ -2,28 +2,34 @@ import * as React from "react";
 import { PegCoordinates } from "./definitions";
 import { PEG_LIST_FIXTURE } from "./fixtures";
 import GameCanvas from "./GameCanvas";
-import { GameViewContainer, OverlayStyle } from "./GameCanvas/styles";
+import GameOverlay, { PointSprite } from "./GameOverlay";
+import { GameViewContainer } from "./styles";
 
 interface State {
   ballsRemaining: number;
   pegs: PegCoordinates[];
   cannonAngle: number | null;
+  pointSprites: PointSprite[];
 }
 
 const DEFAULT_STATE: State = {
   ballsRemaining: 10,
   pegs: PEG_LIST_FIXTURE,
   cannonAngle: null,
+  pointSprites: [],
 };
 
 class GameRoot extends React.Component<{}, State> {
   public state: State = DEFAULT_STATE;
 
   render() {
-    const { cannonAngle, pegs, ballsRemaining } = this.state;
+    const { cannonAngle, pegs, ballsRemaining, pointSprites } = this.state;
     return (
       <div style={GameViewContainer}>
-        <div style={OverlayStyle}>Turns remaining: {ballsRemaining}</div>
+        <GameOverlay
+          ballsRemaining={ballsRemaining}
+          pointSprites={pointSprites}
+        />
         <GameCanvas
           fireCannon={this.fireCannon}
           cannonAngle={cannonAngle}
